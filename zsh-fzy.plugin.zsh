@@ -83,44 +83,37 @@ function __fzy_cmd
 	fi
 }
 
-function __fzy_fsel
-{
-	__fzy_cmd file | while read -r item ; do
-		echo -n "${(q)item} "
-	done
-	echo
-}
-
 function __fzy_psel
 {
 	__fzy_cmd proc | awk '{print $2}' | tr '\n' ' '
 }
 
-function fzy-file-widget
+# Generic function for use buffer on query
+function __fzy_sel
 {
 	emulate -L zsh
 	zle -I
-	LBUFFER="${LBUFFER}$(__fzy_fsel)"
+	local S="$(__fzy_cmd $1 -q "${LBUFFER//$/\\$}")"
+
+	if [[ -n $S ]]; then
+		LBUFFER="${(q)S}"
+	fi
 	zle reset-prompt
+}
+
+function fzy-file-widget
+{
+	__fzy_sel file
 }
 
 function fzy-cd-widget
 {
-	emulate -L zsh
-	zle -I
-	cd "${$(__fzy_cmd cd):-.}"
-	zle reset-prompt
+	__fzy_sel cd
 }
 
 function fzy-history-widget
 {
-	emulate -L zsh
-	zle -I
-	local S=$(__fzy_cmd history -q "${LBUFFER//$/\\$}")
-	if [[ -n $S ]] ; then
-		LBUFFER=$S
-	fi
-	zle reset-prompt
+	__fzy_sel history
 }
 
 function fzy-proc-widget
