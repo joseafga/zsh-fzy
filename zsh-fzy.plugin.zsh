@@ -88,15 +88,21 @@ function __fzy_psel
 	__fzy_cmd proc | awk '{print $2}' | tr '\n' ' '
 }
 
-# Generic function for use buffer on query
+# Generic style it use buffer on query
 function __fzy_sel
 {
 	emulate -L zsh
 	zle -I
-	local S="$(__fzy_cmd $1 -q "${LBUFFER//$/\\$}")"
+
+	local BEGIN="${LBUFFER% *}" END="${LBUFFER##* }"
+	local S="$(__fzy_cmd $1 -q "${END//$/\\$}")"
 
 	if [[ -n $S ]]; then
-		LBUFFER="${(q)S}"
+		if [[ $BEGIN == $END ]]; then
+			LBUFFER="${(q)S}" # as no space on current buffer
+		else
+			LBUFFER="${BEGIN} ${(q)S}"
+		fi
 	fi
 	zle reset-prompt
 }
