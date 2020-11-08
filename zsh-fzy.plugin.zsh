@@ -99,9 +99,9 @@ function __fzy_sel
 
 	if [[ -n $S ]]; then
 		if [[ $BEGIN == $END ]]; then
-			LBUFFER="${(q)S}" # as no space on current buffer
+			LBUFFER="${S}" # as no space on current buffer
 		else
-			LBUFFER="${BEGIN} ${(q)S}"
+			LBUFFER="${BEGIN} ${S}"
 		fi
 	fi
 	zle reset-prompt
